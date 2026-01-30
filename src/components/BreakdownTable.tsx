@@ -16,10 +16,11 @@ const formatMoney = (val: number) => {
 
 export const BreakdownTable: React.FC<BreakdownTableProps> = ({ result }) => {
     const rows = [
-        { label: 'Principal & Interest', amount: result.monthlyPrincipalInterest, isTotal: false },
-        { label: 'Property Tax', amount: result.monthlyPropertyTax, isTotal: false },
-        { label: 'Home Insurance', amount: result.monthlyInsurance, isTotal: false },
-        { label: 'HOA', amount: result.monthlyHOA, isTotal: false },
+        { label: 'Estimated Principal & Interest', amount: result.monthlyPrincipalInterest, isTotal: false },
+        { label: 'Estimated Property Tax', amount: result.monthlyPropertyTax, isTotal: false },
+        { label: 'Estimated Home Insurance', amount: result.monthlyInsurance, isTotal: false },
+        { label: 'Estimated HOA', amount: result.monthlyHOA, isTotal: false },
+        ...(result.monthlyPMI > 0 ? [{ label: 'Estimated PMI', amount: result.monthlyPMI, isTotal: false }] : []),
         { label: 'Total Monthly Payment', amount: result.totalMonthlyPayment, isTotal: true },
     ];
 

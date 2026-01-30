@@ -15,9 +15,11 @@ export interface MortgageResult {
     monthlyPropertyTax: number;
     monthlyInsurance: number;
     monthlyHOA: number;
+    monthlyPMI: number;
     totalMonthlyPayment: number;
     totalInterest: number;
     totalCost: number;
+    downPaymentPercentage: number;
 }
 
 export function calculateMortgage(input: MortgageInput): MortgageResult {
@@ -60,8 +62,18 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
     const monthlyInsurance = input.homeInsurance / 12;
     const monthlyHOA = input.hoa;
 
-    // 5. Calculate total monthly payment
-    const totalMonthlyPayment = monthlyPrincipalInterest + monthlyPropertyTax + monthlyInsurance + monthlyHOA;
+    // 5. Calculate down payment percentage and PMI
+    const downPaymentPercentage = input.homePrice > 0 ? (downPaymentAmount / input.homePrice) * 100 : 0;
+
+    // PMI applies when down payment < 20%
+    // Annual PMI rate: 0.5% of loan amount
+    let monthlyPMI = 0;
+    if (downPaymentPercentage < 20 && loanAmount > 0) {
+        monthlyPMI = (loanAmount * 0.005) / 12;
+    }
+
+    // 6. Calculate total monthly payment (including PMI when applicable)
+    const totalMonthlyPayment = monthlyPrincipalInterest + monthlyPropertyTax + monthlyInsurance + monthlyHOA + monthlyPMI;
 
     // 6. Calculate total interest over life of loan
     const totalPaid = monthlyPrincipalInterest * numPayments;
@@ -76,8 +88,10 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
         monthlyPropertyTax,
         monthlyInsurance,
         monthlyHOA,
+        monthlyPMI,
         totalMonthlyPayment,
         totalInterest,
-        totalCost
+        totalCost,
+        downPaymentPercentage
     };
 }
